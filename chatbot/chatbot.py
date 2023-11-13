@@ -5,7 +5,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix
+from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 
+app = Flask(__name__)
+CORS(app)
 # Carregar o modelo do spaCy
 nlp = spacy.load('en_core_web_sm')
 
@@ -29,7 +34,7 @@ def preprocessing(sentence):
         return ''  # Retorna uma string vazia se não for uma string não nula
 
 # Carregar os dados
-train_data = pd.read_csv(r'archive\Reddit_Data.csv', header=None, names=['clean_comment', 'category'], encoding='latin1')
+train_data = pd.read_csv(r'Reddit_Data.csv', header=None, names=['clean_comment', 'category'], encoding='latin1')
 
 # Remover linhas com valores nulos
 train_data = train_data.dropna(subset=['clean_comment'])
@@ -80,26 +85,25 @@ print("Accuracy:", accuracy)
 print("Confusion Matrix:\n", conf_matrix)
 
 #Função para avaliar uma nova sentença
-def avalie(sentence):
+@app.route('/avaliar_sentimento', methods=['POST'])
+def avaliar_sentimento():
+    data = request.json
+    sentence = data['sentence']
+
     sentence_cleaned = preprocessing_lemma(preprocessing(sentence))
     sentence_tfidf = vectorizer.transform([sentence_cleaned])
     prediction = model.predict(sentence_tfidf)
 
-    #Conversão de categoria para str
     prediction_as_str = str(prediction[0])
 
     if prediction_as_str == '0':
-        print('frase neutra')
+        resultado = 'frase neutra'
     elif prediction_as_str == '1':
-        print('frase positiva')
+        resultado = 'frase positiva'
     elif prediction_as_str == '-1':
-        print('frase negativa')
+        resultado = 'frase negativa'
 
-    #Depuração
-    print("Categoria Real:", y_teste[0]) 
-    print("Categoria Prevista:", prediction_as_str)
-    print("Categorias Reais:", y_teste)
-    print("Categorias Previstas:", predictions)
+    return jsonify({'sentimento': resultado})
 
-        
-avalie('I LOVE IT!')
+if __name__ == '__main__':
+    app.run(debug=True)

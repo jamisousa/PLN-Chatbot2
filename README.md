@@ -20,3 +20,5 @@ Otimização e Ajustes
 Ajustes no modelo e na lógica do chatbot com base nos resultados dos testes.Otimização da performance e eficiência.
 Apresentação Final
 Apresentação do chatbot em funcionamento, destacando os recursos de análise de sentimento e interatividade.Discussão sobre desafios enfrentados, lições aprendidas e eficiência do modelo.
+
+https://www.kaggle.com/datasets/cosmos98/twitter-and-reddit-sentimental-analysis-dataset
